@@ -1,0 +1,13 @@
+healthy_blue:
+  outputs:
+    dev:
+      type: duckdb
+      path: '../data/health.db'
+      threads: 1
+
+    prod:
+      type: duckdb
+      path: prod.duckdb
+      threads: 4
+
+  target: dev
