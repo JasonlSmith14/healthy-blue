@@ -1,0 +1,1 @@
+SELECT * FROM step_daily_trend
