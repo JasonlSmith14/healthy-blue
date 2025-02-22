@@ -1,9 +1,16 @@
-import duckdb
+import sqlite3
+
 import pandas as pd
 
-sql_query = """
-select * from gold_step_daily_trend
+db_path = "data/health.db"
+query = """
+select * from silver_steps_and_weather limit 10
 """
 
-with duckdb.connect("data/health.db") as con:
-    print(con.sql(sql_query).df())
+with sqlite3.connect(db_path) as conn:
+    cursor = conn.cursor()
+    cursor.execute(query)
+    items = cursor.fetchall()
+
+    print(pd.DataFrame(items))
+    
