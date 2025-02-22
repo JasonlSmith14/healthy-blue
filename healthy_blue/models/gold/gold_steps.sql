@@ -6,7 +6,7 @@ SELECT
     AVG(calorie) AS total_calories_burned,
     AVG(calorie) AS average_calories_burned
 FROM
-    silver_step_daily_trend
+    {{ref('silver_steps')}}
 GROUP BY
     month_of_the_year
 ORDER BY
