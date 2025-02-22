@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Float, Integer, PrimaryKeyConstraint, String
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -25,7 +25,8 @@ class Steps(Base):
 class Weather(Base):
     __tablename__ = "weather"
 
-    time = Column(String, primary_key=True)
+    time = Column(String)
+    location = Column(String)
     tavg = Column(Float)
     tmin = Column(Float)
     tmax = Column(Float)
@@ -36,3 +37,5 @@ class Weather(Base):
     wpgt = Column(Float)
     pres = Column(Float)
     tsun = Column(Float)
+
+    __table_args__ = (PrimaryKeyConstraint("time", "location"),)

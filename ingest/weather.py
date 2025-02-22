@@ -28,10 +28,13 @@ with sqlite3.connect(db_path) as conn:
 
     if start.date() != end.date():
 
-        # Create Point for Johannesburg, South Africa
-        johannesburg = Point(
-            -26.2041, 28.0473, 1753
-        )  # Latitude, Longitude, Elevation (m)
+        lat = -26.2041
+        lon = 28.0473
+        alt = 1753
+
+        location = f"{lat},{lon},{alt}"
+
+        johannesburg = Point(lat, lon, alt)
 
         data = Daily(johannesburg, start, end)
         data = data.fetch()
@@ -39,5 +42,6 @@ with sqlite3.connect(db_path) as conn:
         data.reset_index(inplace=True)
         data = data.iloc[1:]
         data["time"] = data["time"].astype(str)
+        data["location"] = location
 
         data.to_sql("weather", con=conn, if_exists="append", index=False)
