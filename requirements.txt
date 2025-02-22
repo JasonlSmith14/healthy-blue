@@ -1,2 +1,4 @@
-duckdb
 pandas
+sqlalchemy
+dbt-sqlite
+meteostat
