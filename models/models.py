@@ -3,6 +3,11 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
+# If this is staging, be loose on constraints to avoid breaking ingestion
+# Impose constraints later
+# Create composite key to not break uniqueness; run_id
+
+
 
 class Steps(Base):
     __tablename__ = "steps"

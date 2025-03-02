@@ -1,0 +1,6 @@
+sqlalchemy vs sqlite, use a single approach - unless it makes sense
+conversion of datetimes
+what is the source type - understand the data you are working with: Don't just do things without understanding
+Consistency and being intentional
+Cleaner code
+Google cloud free tier
