@@ -3,16 +3,10 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
-# If this is staging, be loose on constraints to avoid breaking ingestion
-# Impose constraints later
-# Create composite key to not break uniqueness; run_id
-
-
-
 class Steps(Base):
     __tablename__ = "steps"
 
-    datauuid = Column(String, primary_key=True)
+    datauuid = Column(String)
     binning_data = Column(String)
     update_time = Column(String)
     create_time = Column(String)
@@ -25,6 +19,9 @@ class Steps(Base):
     deviceuuid = Column(String)
     pkg_name = Column(String)
     day_time = Column(Integer)
+    run_id = Column(String)
+
+    __table_args__ = (PrimaryKeyConstraint("datauuid", "run_id"),)
 
 
 class Weather(Base):
