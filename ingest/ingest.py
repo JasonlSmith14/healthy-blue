@@ -1,8 +1,7 @@
 from datetime import datetime
 import pandas as pd
 from pydantic import BaseModel
-from sqlalchemy import func, select, text
-import os
+from sqlalchemy import func, select
 from meteostat import Point, Daily
 
 from models.models import Steps, Weather
@@ -24,12 +23,15 @@ class Ingest(BaseModel):
         data["run_id"] = folder_path
 
         with self.database.get_session() as conn:
-            data.to_sql(
-                Steps.__tablename__,
-                self.database.engine,
-                if_exists="append",
-                index=False,
-            )
+            try:
+                data.to_sql(
+                    Steps.__tablename__,
+                    self.database.engine,
+                    if_exists="append",
+                    index=False,
+                )
+            except Exception as e:
+                print(e)
 
     def ingest_weather(
         self,
@@ -47,13 +49,13 @@ class Ingest(BaseModel):
 
             # Set time period
             start = (
-                datetime.strptime(weather_time, "%Y-%m-%d")
+                datetime.strptime(weather_time, "%Y-%m-%d %H:%M:%S.%f").date()
                 if weather_time
                 else datetime.strptime(default_start_date, "%Y-%m-%d")
             )
-            end = datetime.now()
+            end = datetime.now().date()
 
-            if start.date() != end.date():
+            if start != end:
                 location_point = Point(latitude, longitude, altitude)
 
                 data = Daily(location_point, start, end)
