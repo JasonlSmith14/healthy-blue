@@ -45,29 +45,29 @@ class Ingest(BaseModel):
             query = select(func.max(Weather.time))
             output = conn.execute(query)
 
-            weather_time = output.fetchall()[0][0]
+        weather_time = output.fetchall()[0][0]
 
-            # Set time period
-            start = (
-                datetime.strptime(weather_time, "%Y-%m-%d %H:%M:%S.%f").date()
-                if weather_time
-                else datetime.strptime(default_start_date, "%Y-%m-%d")
+        # Set time period
+        start = (
+            datetime.strptime(weather_time, "%Y-%m-%d %H:%M:%S.%f")
+            if weather_time
+            else datetime.strptime(default_start_date, "%Y-%m-%d")
+        )
+        end = datetime.now()
+
+        if start.date() != end.date():
+            location_point = Point(latitude, longitude, altitude)
+
+            data = Daily(location_point, start, end)
+            data = data.fetch()
+
+            data.reset_index(inplace=True)
+            data = data.iloc[1:]
+            data["location"] = location_name
+
+            data.to_sql(
+                Weather.__tablename__,
+                con=self.database.engine,
+                if_exists="append",
+                index=False,
             )
-            end = datetime.now().date()
-
-            if start != end:
-                location_point = Point(latitude, longitude, altitude)
-
-                data = Daily(location_point, start, end)
-                data = data.fetch()
-
-                data.reset_index(inplace=True)
-                data = data.iloc[1:]
-                data["location"] = location_name
-
-                data.to_sql(
-                    Weather.__tablename__,
-                    con=self.database.engine,
-                    if_exists="append",
-                    index=False,
-                )
