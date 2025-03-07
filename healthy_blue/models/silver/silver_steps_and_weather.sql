@@ -1,5 +1,5 @@
 SELECT
-    recorded_date,
+    silver_steps.recorded_date,
     location,
     "count",
     speed,
