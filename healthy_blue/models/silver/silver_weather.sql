@@ -1,5 +1,6 @@
 SELECT
     CAST(time AS DATE) as recorded_date,
+    location,
     tavg as average_temperature,
     tmin as minimum_temperature,
     tmax as maximum_temperature,
