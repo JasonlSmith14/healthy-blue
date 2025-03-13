@@ -1,5 +1,5 @@
 SELECT
-    CAST(time AS DATE) as recorded_date,
+    strftime('%Y-%m-%d', time) as recorded_date,
     location,
     tavg as average_temperature,
     tmin as minimum_temperature,
