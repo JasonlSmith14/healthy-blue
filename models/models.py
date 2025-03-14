@@ -20,6 +20,7 @@ class Steps(Base):
     pkg_name = Column(String)
     day_time = Column(Integer)
     run_id = Column(String)
+    location = Column(String)
 
     __table_args__ = (PrimaryKeyConstraint("datauuid", "run_id"),)
 
