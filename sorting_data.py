@@ -24,7 +24,7 @@ def sorting_data(
 
     try:
         os.mkdir(f"{cleaned_data_path}/")
-    except FileExistsError as fee:
+    except FileExistsError:
         print(f"Folder: {cleaned_data_path} already exists")
 
     for file in files:
