@@ -9,7 +9,7 @@ SELECT
     wdir as wind_direction,
     wspd as wind_speed,
     wpgt as wind_gust_speed,
-    pres as presure,
+    pres as pressure,
     tsun as sunshine_duration
 FROM 
     {{ref('bronze_weather')}}
