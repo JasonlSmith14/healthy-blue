@@ -1,15 +1,14 @@
 import streamlit as st
-import subprocess
 
-from db.database import Database
 from ingest.ingest import Ingest
 from models.city import City
 from sorting_data import sorting_data
 from util import compile_run_dbt
+from config import database
 
-data_directory = "data"
 raw_data_directory = "data/raw"
 clean_data_directory = "data/clean"
+
 
 cities = [
     City(-26.2041, 28.0473, 1753, "Johannesburg"),
@@ -47,9 +46,9 @@ if st.button(label="Upload files"):
             uploaded_folder=uploaded_folder,
         )
 
-        db_path = f"{data_directory}/health.db"
-        database = Database(db_url=f"sqlite:///{db_path}")
-        ingest = Ingest(data_directory=clean_data_directory, database=database, city=city)
+        ingest = Ingest(
+            data_directory=clean_data_directory, database=database, city=city
+        )
 
         ingest.ingest_steps(
             folder_path=cleaned_data_path, steps_file_name="step_daily_trend.csv"
@@ -60,3 +59,5 @@ if st.button(label="Upload files"):
         run_command = ["dbt", "run"]
 
         compile_run_dbt(compile_command=compile_command, run_command=run_command)
+
+        st.switch_page("pages/insights_page.py")
