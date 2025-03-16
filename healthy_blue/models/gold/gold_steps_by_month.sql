@@ -11,7 +11,9 @@ SELECT
     SUM(calorie) AS total_calories_burned,
     AVG(calorie) AS average_calories_burned,
     MAX(calorie) AS maximum_calories_burned,
-    AVG(average_temperature) AS average_temperature
+    AVG(average_temperature) AS average_temperature,
+    AVG(precipitation) AS average_rainfall, 
+    AVG(wind_speed) AS average_windspeed
 FROM
     {{ref('silver_steps_and_weather')}}
 GROUP BY
