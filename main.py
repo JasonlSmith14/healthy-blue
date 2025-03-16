@@ -26,35 +26,37 @@ option = st.selectbox(
     (city.location_name for city in cities),
 )
 
-if st.button(label="Upload files") and option:
-    if not files:
-        raise ValueError("Files were not uploaded")
 
-    city = next((city for city in cities if city.location_name == option), None)
+if st.button(label="Upload files"):
+    with st.status("Creating Insights..."):
+        if not files:
+            raise ValueError("Files were not uploaded")
 
-    for file in files:
-        with open(f"{raw_data_directory}/{file.name}", "wb") as f:
-            bytes_data = file.read()
-            f.write(bytes_data)
+        city = next((city for city in cities if city.location_name == option), None)
 
-    uploaded_folder = ""
+        for file in files:
+            with open(f"{raw_data_directory}/{file.name}", "wb") as f:
+                bytes_data = file.read()
+                f.write(bytes_data)
 
-    cleaned_data_path = sorting_data(
-        raw_data_directory=raw_data_directory,
-        cleaned_data_directory=clean_data_directory,
-        uploaded_folder=uploaded_folder,
-    )
+        uploaded_folder = ""
 
-    db_path = f"{data_directory}/health.db"
-    database = Database(db_url=f"sqlite:///{db_path}")
-    ingest = Ingest(data_directory=clean_data_directory, database=database, city=city)
+        cleaned_data_path = sorting_data(
+            raw_data_directory=raw_data_directory,
+            cleaned_data_directory=clean_data_directory,
+            uploaded_folder=uploaded_folder,
+        )
 
-    ingest.ingest_steps(
-        folder_path=cleaned_data_path, steps_file_name="step_daily_trend.csv"
-    )
-    ingest.ingest_weather()
+        db_path = f"{data_directory}/health.db"
+        database = Database(db_url=f"sqlite:///{db_path}")
+        ingest = Ingest(data_directory=clean_data_directory, database=database, city=city)
 
-    compile_command = ["dbt", "compile"]
-    run_command = ["dbt", "run"]
+        ingest.ingest_steps(
+            folder_path=cleaned_data_path, steps_file_name="step_daily_trend.csv"
+        )
+        ingest.ingest_weather()
 
-    compile_run_dbt(compile_command=compile_command, run_command=run_command)
+        compile_command = ["dbt", "compile"]
+        run_command = ["dbt", "run"]
+
+        compile_run_dbt(compile_command=compile_command, run_command=run_command)
