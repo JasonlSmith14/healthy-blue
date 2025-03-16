@@ -1,6 +1,6 @@
 SELECT
     silver_steps.recorded_date,
-    location,
+    silver_steps.location,
     "count",
     speed,
     distance,
@@ -13,7 +13,7 @@ SELECT
     wind_direction,
     wind_speed,
     wind_gust_speed,
-    presure,
+    pressure,
     sunshine_duration
 FROM 
     {{ref('silver_steps')}} as silver_steps
@@ -21,3 +21,5 @@ LEFT JOIN
     {{ref('silver_weather')}} as silver_weather
 ON 
     silver_steps.recorded_date = silver_weather.recorded_date
+AND
+    silver_steps.location = silver_weather.location
