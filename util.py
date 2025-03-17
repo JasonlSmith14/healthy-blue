@@ -33,9 +33,4 @@ def compile_run_dbt(compile_command: List[str], run_command: List[str]):
         print(e.stderr.decode())
 
 
-def human_readable(num):
-    if num >= 1_000_000:
-        return f"{num/1_000_000:.1f}M"
-    elif num >= 1_000:
-        return f"{num/1_000:.1f}K"
-    return str(num)
+
