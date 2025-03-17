@@ -6,6 +6,11 @@ from sorting_data import sorting_data
 from util import compile_run_dbt
 from config import database
 
+st.set_page_config(layout="wide")
+
+st.sidebar.page_link("main.py", label="Upload Your Data")
+st.sidebar.page_link("pages/insights.py", label="Your Insights")
+
 raw_data_directory = "data/raw"
 clean_data_directory = "data/clean"
 
@@ -60,4 +65,4 @@ if st.button(label="Upload files"):
 
         compile_run_dbt(compile_command=compile_command, run_command=run_command)
 
-        st.switch_page("pages/insights_page.py")
+        st.switch_page("pages/insights.py")
