@@ -3,3 +3,6 @@ sqlalchemy
 dbt-sqlite
 meteostat
 streamlit
+openai
+langchain 
+langchain-openai
