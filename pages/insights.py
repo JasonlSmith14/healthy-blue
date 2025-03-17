@@ -7,6 +7,20 @@ st.set_page_config(layout="wide")
 st.sidebar.page_link("main.py", label="Upload Your Data")
 st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
+day_with_most_steps_tab = "Day with the most steps"
+day_with_greatest_distance_tab = "Day with the greatest distance traveled"
+month_with_most_steps_tab = "Month with the most steps"
+
+tab_selection = st.sidebar.selectbox(
+    "Which insight would you like to see?",
+    [
+        "Please select an option",
+        "Day with the most steps",
+        "Day with the greatest distance traveled",
+        "Month with the most steps",
+    ],
+)
+
 steps_by_year_tag = "steps_by_year"
 steps_by_month_tag = "steps_by_month"
 steps_by_day_tag = "steps_by_day"
@@ -36,43 +50,12 @@ insights = Insights(
 
 insights.years_available()
 
-(
-    day_with_most_steps_tab,
-    month_with_most_steps_tab,
-    steps_over_the_year_tab,
-    average_max_min_steps_by_month_tab,
-    distance_over_the_year_tab,
-    average_max_min_distance_by_month_tab,
-    steps_over_the_years_tab,
-) = st.tabs(
-    [
-        "Your day with most steps",
-        "Your month with most steps",
-        "Your steps over the year",
-        "Your average and maximum steps over the year",
-        "Your distances over the year",
-        "Your average and maximum distances over the year",
-        "Your steps over the years",
-    ]
-)
-
-with day_with_most_steps_tab:
+if tab_selection == day_with_most_steps_tab:
     insights.day_with_most_steps()
 
-with month_with_most_steps_tab:
+if tab_selection == day_with_greatest_distance_tab:
+    insights.day_with_greatest_distance()
+
+if tab_selection == month_with_most_steps_tab:
     insights.month_with_most_steps()
-
-with steps_over_the_year_tab:
-    insights.steps_over_the_year()
-
-with steps_over_the_years_tab:
-    insights.steps_over_the_years()
-
-with average_max_min_steps_by_month_tab:
-    insights.average_max_min_steps_by_month()
-
-with distance_over_the_year_tab:
-    insights.distance_over_the_year()
-
-with average_max_min_distance_by_month_tab:
-    insights.average_max_min_distance_by_month()
+    
