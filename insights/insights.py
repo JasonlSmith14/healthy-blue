@@ -14,6 +14,18 @@ class Insights:
         self.steps_by_month = steps_by_month
         self.steps_by_year = steps_by_year
 
+        self.steps_by_day_date_column = "recorded_date"
+        self.steps_by_month_date_column = "month_of_the_year"
+        self.steps_by_year_date_column = "year"
+
+        self.total_distance = "total_distance"
+        self.maximum_distance = "maximum_distance"
+        self.average_distance = "average_distance"
+
+        self.total_steps = "total_steps"
+        self.maximum_steps = "maximum_steps"
+        self.average_steps = "average_steps"
+
     def _human_readable(self, num: int):
         if num >= 1_000_000:
             return f"{num/1_000_000:.1f}M"
@@ -24,15 +36,19 @@ class Insights:
     def _write_output(self, input: str):
         st.header(input)
 
-    def _formatting_for_month_chart(self, data: pd.DataFrame):
-        data["month_of_the_year"] = pd.to_datetime(
-            data["month_of_the_year"], format="%Y-%m"
-        )
-        data = data[data["month_of_the_year"].dt.year == int(self.year_option)]
+    def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
+        data[date_column] = pd.to_datetime(data[date_column], format=format)
+        data = data[data[date_column].dt.year == int(self.year_option)]
+        return data
 
-        data["month_of_the_year"] = data["month_of_the_year"].apply(
-            lambda x: x.strftime("%B")
+    def _formatting_for_month_chart(self, data: pd.DataFrame):
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_month_date_column, format="%Y-%m"
         )
+
+        data[self.steps_by_month_date_column] = data[
+            self.steps_by_month_date_column
+        ].apply(lambda x: x.strftime("%B"))
 
         month_order = [
             "January",
@@ -49,16 +65,16 @@ class Insights:
             "December",
         ]
 
-        data["month_of_the_year"] = pd.Categorical(
-            data["month_of_the_year"], categories=month_order, ordered=True
+        data[self.steps_by_month_date_column] = pd.Categorical(
+            data[self.steps_by_month_date_column], categories=month_order, ordered=True
         )
 
-        data = data.sort_values("month_of_the_year")
+        data = data.sort_values(self.steps_by_month_date_column)
 
         return data
 
     def years_available(self):
-        years = self.steps_by_year["year"]
+        years = self.steps_by_year[self.steps_by_year_date_column]
         self.year_option = st.selectbox(
             "Which year are you interested in seeing?",
             placeholder="Choose a year",
@@ -67,24 +83,24 @@ class Insights:
 
     def day_with_most_steps(self):
         data = self.steps_by_day.copy()
-        data["recorded_date"] = pd.to_datetime(data["recorded_date"], format="%Y-%m-%d")
-        data = data[data["recorded_date"].dt.year == int(self.year_option)]
-        row = data.loc[data["total_steps"].idxmax()]
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
+        )
+        row = data.loc[data[self.total_steps].idxmax()]
 
         self._write_output(
-            f"You took the most steps on {row["recorded_date"].strftime("%d %B")} with a total of {self._human_readable(row["total_steps"])} steps"
+            f"You took the most steps on {row[self.steps_by_day_date_column].strftime("%d %B")} with a total of {self._human_readable(row[self.total_steps])} steps"
         )
 
     def month_with_most_steps(self):
         data = self.steps_by_month.copy()
-        data["month_of_the_year"] = pd.to_datetime(
-            data["month_of_the_year"], format="%Y-%m"
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_month_date_column, format="%Y-%m"
         )
-        data = data[data["month_of_the_year"].dt.year == int(self.year_option)]
-        row = data.loc[data["total_steps"].idxmax()]
+        row = data.loc[data[self.total_steps].idxmax()]
 
         self._write_output(
-            f"You took the most steps in {row["month_of_the_year"].strftime("%B")} with a total of {self._human_readable(row["total_steps"])} steps"
+            f"You took the most steps in {row[self.steps_by_month_date_column].strftime("%B")} with a total of {self._human_readable(row[self.total_steps])} steps"
         )
 
     def average_max_min_steps_by_month(self):
@@ -93,8 +109,8 @@ class Insights:
 
         st.line_chart(
             data=data,
-            x="month_of_the_year",
-            y=["average_steps", "maximum_steps"],
+            x=self.steps_by_month_date_column,
+            y=[self.average_steps, self.maximum_steps],
             x_label="Month",
             y_label="Steps",
         )
@@ -105,8 +121,8 @@ class Insights:
 
         st.line_chart(
             data=data,
-            x="month_of_the_year",
-            y=["average_distance", "maximum_distance"],
+            x=self.steps_by_month_date_column,
+            y=[self.average_distance, self.maximum_distance],
             x_label="Month",
             y_label="Distance (m)",
         )
@@ -117,8 +133,8 @@ class Insights:
 
         st.bar_chart(
             data=data,
-            x="month_of_the_year",
-            y=["total_distance"],
+            x=self.steps_by_month_date_column,
+            y=[self.total_distance],
             x_label="Month",
             y_label="Distance (m)",
         )
@@ -129,8 +145,8 @@ class Insights:
 
         st.bar_chart(
             data=data,
-            x="month_of_the_year",
-            y="total_steps",
+            x=self.steps_by_month_date_column,
+            y=self.total_steps,
             x_label="Month",
             y_label="Steps",
         )
@@ -140,8 +156,8 @@ class Insights:
 
         st.bar_chart(
             data=data,
-            x="year",
-            y="total_steps",
+            x=self.steps_by_year_date_column,
+            y=self.total_steps,
             x_label="Year",
             y_label="Steps",
         )
