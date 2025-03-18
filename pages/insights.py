@@ -56,4 +56,4 @@ insights_map = {
     month_with_most_steps_tab: insights.month_with_most_steps,
 }
 
-insights_map[tab_selection]()
+insights_map.get(tab_selection, lambda: None)()
