@@ -1,7 +1,7 @@
 from datetime import datetime
+import os
 import pandas as pd
 from pydantic import BaseModel
-from sqlalchemy import func, select
 from meteostat import Point, Daily
 
 from models.city import City
@@ -13,16 +13,43 @@ class Ingest(BaseModel):
     data_directory: str
     database: Database
     city: City
+    creation_date: str = None
 
     class Config:
         arbitrary_types_allowed = True
 
-    def ingest_steps(self, folder_path: str, steps_file_name: str):
+    def sorting_data(
+        self, raw_data_directory: str, cleaned_data_directory: str, uploaded_file: str
+    ):
+        self.creation_date = uploaded_file.split(".")[-2]
+        cleaned_data_path = f"{cleaned_data_directory}/{self.creation_date}"
 
-        file_path = f"{self.data_directory}/{folder_path}/{steps_file_name}"
+        try:
+            os.mkdir(f"{cleaned_data_path}/")
+        except FileExistsError:
+            print(f"Folder: {cleaned_data_path} already exists")
+
+        new_file_name = uploaded_file.split(".")[-3]
+        data = pd.read_csv(
+            f"{raw_data_directory}/{uploaded_file}",
+            header=1,
+            index_col=None,
+        )
+
+        data.reset_index(inplace=True)
+        columns = [col.strip() for col in data.columns if col != "index"]
+
+        data = data.iloc[:, :-1]
+        data.columns = columns
+
+        data.to_csv(f"{cleaned_data_path}/{new_file_name}.csv")
+
+    def ingest_steps(self, steps_file_name: str):
+
+        file_path = f"{self.data_directory}/{self.creation_date}/{steps_file_name}"
 
         data = pd.read_csv(file_path, index_col=0)
-        data["run_id"] = folder_path
+        data["run_id"] = self.creation_date
         data["location"] = self.city.location_name
 
         try:
@@ -45,7 +72,7 @@ class Ingest(BaseModel):
             self.database.engine,
             params={"location": self.city.location_name},
         )
-        
+
         weather_time = weather_data.iloc[0, 0]
 
         start = (
