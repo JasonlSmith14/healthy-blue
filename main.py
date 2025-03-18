@@ -3,28 +3,26 @@ import streamlit as st
 from ingest.ingest import Ingest
 from models.city import City
 from sorting_data import sorting_data
-from util import compile_run_dbt
-from config import database
+from util import run_dbt
+from config import database, data_directory
 
 st.set_page_config(layout="wide")
 
 st.sidebar.page_link("main.py", label="Upload Your Data")
 st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
-raw_data_directory = "data/raw"
-clean_data_directory = "data/clean"
+raw_data_directory = f"{data_directory}/raw"
+clean_data_directory = f"{data_directory}/clean"
 
+files = st.file_uploader(
+    label="Upload your health data files", accept_multiple_files=True
+)
 
 cities = [
     City(-26.2041, 28.0473, 1753, "Johannesburg"),
     City(-29.8587, 31.0218, 8, "Durban"),
     City(-33.9249, 18.4241, 42, "Cape Town"),
 ]
-
-files = st.file_uploader(
-    label="Upload your health data files", accept_multiple_files=True
-)
-
 option = st.selectbox(
     "What was your primary location?",
     (city.location_name for city in cities),
@@ -32,7 +30,7 @@ option = st.selectbox(
 
 
 if st.button(label="Upload files"):
-    with st.status("Creating Insights..."):
+    with st.status("Ingesting Health Data..."):
         if not files:
             raise ValueError("Files were not uploaded")
 
@@ -60,9 +58,8 @@ if st.button(label="Upload files"):
         )
         ingest.ingest_weather()
 
-        compile_command = ["dbt", "compile"]
         run_command = ["dbt", "run"]
 
-        compile_run_dbt(compile_command=compile_command, run_command=run_command)
+        run_dbt(run_command=run_command, dbt_project_name="healthy_blue")
 
         st.switch_page("pages/insights.py")
