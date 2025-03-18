@@ -2,7 +2,7 @@ import streamlit as st
 
 from ingest.ingest import Ingest
 from models.city import City
-from sorting_data import sorting_data
+from ingest.sorting_data import sorting_data
 from util import run_dbt
 from config import database, data_directory
 
