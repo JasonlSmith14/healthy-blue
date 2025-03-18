@@ -39,10 +39,14 @@ class Ingest(BaseModel):
         self,
         default_start_date: str = "2015-01-01",
     ):
-        with self.database.get_session() as conn:
-            query = select(func.max(Weather.time))
-            output = conn.execute(query)
-            weather_time = output.fetchall()[0][0]
+
+        weather_data = pd.read_sql(
+            f"SELECT MAX(time) AS max_time FROM {Weather.__tablename__} WHERE location = :location",
+            self.database.engine,
+            params={"location": self.city.location_name},
+        )
+        
+        weather_time = weather_data.iloc[0, 0]
 
         start = (
             datetime.strptime(weather_time, "%Y-%m-%d %H:%M:%S.%f")

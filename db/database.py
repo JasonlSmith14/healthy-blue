@@ -10,7 +10,3 @@ class Database:
         self.engine = create_engine(self.db_url)
         self.Session = sessionmaker(bind=self.engine)
         Base.metadata.create_all(self.engine)
-
-    def get_session(self):
-        return self.Session()
-
