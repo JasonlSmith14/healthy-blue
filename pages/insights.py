@@ -15,9 +15,9 @@ tab_selection = st.sidebar.selectbox(
     "Which insight would you like to see?",
     [
         "Please select an option",
-        "Day with the most steps",
-        "Day with the greatest distance traveled",
-        "Month with the most steps",
+        day_with_most_steps_tab,
+        day_with_greatest_distance_tab,
+        month_with_most_steps_tab,
     ],
 )
 
@@ -50,12 +50,10 @@ insights = Insights(
 
 insights.years_available()
 
-if tab_selection == day_with_most_steps_tab:
-    insights.day_with_most_steps()
+insights_map = {
+    day_with_most_steps_tab: insights.day_with_most_steps,
+    day_with_greatest_distance_tab: insights.day_with_greatest_distance,
+    month_with_most_steps_tab: insights.month_with_most_steps,
+}
 
-if tab_selection == day_with_greatest_distance_tab:
-    insights.day_with_greatest_distance()
-
-if tab_selection == month_with_most_steps_tab:
-    insights.month_with_most_steps()
-    
+insights_map[tab_selection]()

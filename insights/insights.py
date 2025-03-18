@@ -1,7 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-from llm.openai_model import Model, ResponseFormatter
+from insights.model import Model
+from insights.formatting import ResponseFormatter
 
 
 class Insights:
