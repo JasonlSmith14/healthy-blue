@@ -23,6 +23,8 @@ class Insights:
         self.total_distance = "total_distance"
         self.total_steps = "total_steps"
 
+        self.maximum_temperature = "maximum_temperature"
+
         self.units = (
             "The units for the input data are as follows:"
             " Total steps are measured in steps, speed in meters per second (m/s), and total distance in meters (m). "
@@ -36,29 +38,32 @@ class Insights:
 
         self.model = Model(
             system_prompt=f"""
-                        You are an expert in transforming **personal health data and weather trends** into fun and engaging summaries—like Spotify Wrapped, but for wellness! 
+                    You are an expert in transforming **personal health data and weather trends** into fun and engaging summaries—like Spotify Wrapped, but for wellness! 
 
-                        🎯 **Your Goal:** 
-                        Create vibrant, **highly personalized** insights that celebrate user achievements and make their journey exciting and motivating.
+                    🎯 **Your Goal:**  
+                    Create vibrant, **highly personalized** insights that celebrate user achievements, making their journey exciting and motivating.  
+                    The health data should always be the main focus, with weather data used to explain or highlight **why** certain patterns may have occurred. 🌦️  
 
-                        ✨ **Tone & Style:** 
-                        - Positive, playful, and **encouraging**—think of it as a **highlight reel** of their progress!
-                        - Keep language **enthusiastic and energetic** to make users feel accomplished.
-                        - Use **short, engaging sentences** with a lighthearted tone.
+                    ✨ **Tone & Style:**  
+                    - Positive, playful, and **encouraging**—think of it as a **highlight reel** of their progress!  
+                    - Keep language **enthusiastic and energetic** to make users feel accomplished.  
+                    - Use **short, engaging sentences** with a lighthearted tone.  
 
-                        📊 **Key Considerations:** 
-                        - Insights should be **easy to understand**—avoid overly complex stats.
-                        - **Data applies to general movement and activity**—do not assume a specific type of exercise or sport.
-                        - **Units for input data**:  
-                        ```
-                        {self.units}
-                        ```
-                        - Format numbers clearly for quick readability.
-                        - Include **fun facts and motivating challenges** to inspire continued progress.
-                        - **Use emojis freely** to enhance engagement and make the summary more shareable. 🎉
+                    📊 **Key Considerations:**  
+                    - Insights should be **easy to understand**—avoid overly complex stats.  
+                    - **Data applies to general movement and activity**—do not assume a specific type of exercise or sport.  
+                    - **Weather data should complement the story**, helping explain unusual dips or boosts (e.g., "Rainy days didn’t slow you down! ☔").  
+                    - **Units for input data**:  
+                    ```
+                    {self.units}
+                    ```  
+                    - Format numbers clearly for quick readability.  
+                    - Include **fun facts and motivating challenges** to inspire continued progress.  
+                    - Use weather to add context: celebrate pushing through bad weather or relaxing during extreme heat or storms.  
+                    - **Use emojis freely** to enhance engagement and make the summary more shareable. 🎉  
 
-                        Your insights should feel **exciting, rewarding, and worth celebrating**! 🚀
-                        """
+                    Your insights should feel **exciting, rewarding, and worth celebrating**! 🚀
+                """
         )
 
     def _human_readable(self, num: int, distance_flag: bool = False):
@@ -125,7 +130,27 @@ class Insights:
         row = data.loc[data[self.total_distance].idxmax()]
 
         self._write_output(
-            f"This is the day the user traveled the furthest distance: {row}"
+            f"This is the day the user travelled the furthest distance: {row}"
+        )
+
+    def day_with_least_steps(self):
+        data = self.steps_by_day.copy()
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
+        )
+        row = data.loc[data[self.total_steps].idxmax()]
+
+        self._write_output(f"This is the day the user took the least steps: {row}")
+
+    def day_with_smallest_distance(self):
+        data = self.steps_by_day.copy()
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
+        )
+        row = data.loc[data[self.total_distance].idxmax()]
+
+        self._write_output(
+            f"This is the day the user travelled the smallest distance: {row}"
         )
 
     def month_with_most_steps(self):
@@ -136,3 +161,34 @@ class Insights:
         row = data.loc[data[self.total_steps].idxmax()]
 
         self._write_output(f"This is the month the user took the most steps: {row}")
+
+    def month_with_least_steps(self):
+        data = self.steps_by_month.copy()
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_month_date_column, format="%Y-%m"
+        )
+        row = data.loc[data[self.total_steps].idxmin()]
+
+        self._write_output(f"This is the month the user took the least steps: {row}")
+
+    def coldest_day(self):
+        data = self.steps_by_day.copy()
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
+        )
+        row = data.loc[data[self.maximum_temperature].idxmin()]
+
+        self._write_output(f"This is the coldest day of the year for the user: {row}")
+
+    def hottest_day(self):
+        data = self.steps_by_day.copy()
+        data = self._filter_for_year(
+            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
+        )
+        row = data.loc[data[self.maximum_temperature].idxmax()]
+
+        self._write_output(f"This is the hottest day of the year for the user: {row}")
+
+    def overview_of_years(self):
+        data = self.steps_by_year.copy()
+        self._write_output(f"This is the user's health data over the years: {data}")

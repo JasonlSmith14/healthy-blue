@@ -7,9 +7,18 @@ st.set_page_config(layout="wide")
 st.sidebar.page_link("main.py", label="Upload Your Data")
 st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
-day_with_most_steps_tab = "Day with the most steps"
-day_with_greatest_distance_tab = "Day with the greatest distance traveled"
-month_with_most_steps_tab = "Month with the most steps"
+day_with_most_steps_tab = "Your most active day 🏆"
+day_with_greatest_distance_tab = "The longest distance you traveled in a day 🚶‍♂️🌍"
+month_with_most_steps_tab = "Your busiest month on foot 📅✨"
+
+day_with_least_steps_tab = "Your most restful day 😌"
+day_with_smallest_distance_tab = "Shortest distance traveled in a day 🛋️"
+month_with_least_steps_tab = "Your most relaxed month 📆💤"
+
+hottest_day_tab = "The hottest day you powered through 🔥🌞"
+coldest_day_tab = "The chilliest day you faced ❄️🧤"
+
+year_overview_tab = "Your year in motion! 🎉🚀"
 
 tab_selection = st.sidebar.selectbox(
     "Which insight would you like to see?",
@@ -18,6 +27,12 @@ tab_selection = st.sidebar.selectbox(
         day_with_most_steps_tab,
         day_with_greatest_distance_tab,
         month_with_most_steps_tab,
+        day_with_least_steps_tab,
+        day_with_smallest_distance_tab,
+        month_with_least_steps_tab,
+        hottest_day_tab,
+        coldest_day_tab,
+        year_overview_tab,
     ],
 )
 
@@ -54,6 +69,12 @@ insights_map = {
     day_with_most_steps_tab: insights.day_with_most_steps,
     day_with_greatest_distance_tab: insights.day_with_greatest_distance,
     month_with_most_steps_tab: insights.month_with_most_steps,
+    hottest_day_tab: insights.hottest_day,
+    coldest_day_tab: insights.coldest_day,
+    day_with_least_steps_tab: insights.day_with_least_steps,
+    day_with_smallest_distance_tab: insights.day_with_smallest_distance,
+    month_with_least_steps_tab: insights.month_with_least_steps,
+    year_overview_tab: insights.overview_of_years,
 }
 
 insights_map.get(tab_selection, lambda: None)()
