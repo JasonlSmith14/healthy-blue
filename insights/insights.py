@@ -138,7 +138,7 @@ class Insights:
         data = self._filter_for_year(
             data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
         )
-        row = data.loc[data[self.total_steps].idxmax()]
+        row = data.loc[data[self.total_steps].idxmin()]
 
         self._write_output(f"This is the day the user took the least steps: {row}")
 
@@ -147,7 +147,7 @@ class Insights:
         data = self._filter_for_year(
             data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
         )
-        row = data.loc[data[self.total_distance].idxmax()]
+        row = data.loc[data[self.total_distance].idxmin()]
 
         self._write_output(
             f"This is the day the user travelled the smallest distance: {row}"
@@ -188,7 +188,3 @@ class Insights:
         row = data.loc[data[self.maximum_temperature].idxmax()]
 
         self._write_output(f"This is the hottest day of the year for the user: {row}")
-
-    def overview_of_years(self):
-        data = self.steps_by_year.copy()
-        self._write_output(f"This is the user's health data over the years: {data}")

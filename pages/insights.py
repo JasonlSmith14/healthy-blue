@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 from config import database
 import streamlit as st
@@ -19,22 +20,6 @@ hottest_day_tab = "The hottest day you powered through 🔥🌞"
 coldest_day_tab = "The chilliest day you faced ❄️🧤"
 
 year_overview_tab = "Your year in motion! 🎉🚀"
-
-tab_selection = st.sidebar.selectbox(
-    "Which insight would you like to see?",
-    [
-        "Please select an option",
-        day_with_most_steps_tab,
-        day_with_greatest_distance_tab,
-        month_with_most_steps_tab,
-        day_with_least_steps_tab,
-        day_with_smallest_distance_tab,
-        month_with_least_steps_tab,
-        hottest_day_tab,
-        coldest_day_tab,
-        year_overview_tab,
-    ],
-)
 
 steps_by_year_tag = "steps_by_year"
 steps_by_month_tag = "steps_by_month"
@@ -65,6 +50,18 @@ insights = Insights(
 
 insights.years_available()
 
+insight_names = [
+    day_with_most_steps_tab,
+    day_with_greatest_distance_tab,
+    month_with_most_steps_tab,
+    day_with_least_steps_tab,
+    day_with_smallest_distance_tab,
+    month_with_least_steps_tab,
+    hottest_day_tab,
+    coldest_day_tab,
+    year_overview_tab,
+]
+
 insights_map = {
     day_with_most_steps_tab: insights.day_with_most_steps,
     day_with_greatest_distance_tab: insights.day_with_greatest_distance,
@@ -74,7 +71,42 @@ insights_map = {
     day_with_least_steps_tab: insights.day_with_least_steps,
     day_with_smallest_distance_tab: insights.day_with_smallest_distance,
     month_with_least_steps_tab: insights.month_with_least_steps,
-    year_overview_tab: insights.overview_of_years,
 }
 
-insights_map.get(tab_selection, lambda: None)()
+if "insight_number" not in st.session_state:
+    st.session_state["insight_number"] = 0
+
+
+@st.fragment
+def display_insight():
+    rerun = False
+    insight_name = insight_names[st.session_state["insight_number"]]
+    insight_function = insights_map[insight_name]
+
+    st.markdown(f"# {insight_name}")
+    with st.spinner("Generating insight...", show_time=True):
+        insight_function()
+
+    col1, col2 = st.columns(2, gap="small")
+    if st.session_state["insight_number"] != 0:
+        with col1:
+            if st.button(
+                "⬅️ Previous", key=f"previous_{st.session_state["insight_number"]}"
+            ):
+                st.session_state["insight_number"] = (
+                    st.session_state["insight_number"] - 1
+                )
+                rerun = True
+
+    if st.session_state["insight_number"] != len(insight_names):
+        with col2:
+            if st.button("Next ➡️", key=f"next_{st.session_state["insight_number"]}"):
+                st.session_state["insight_number"] = (
+                    st.session_state["insight_number"] + 1
+                )
+                rerun = True
+    if rerun:
+        st.rerun(scope="fragment")
+
+
+display_insight()
