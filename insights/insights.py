@@ -68,7 +68,10 @@ class Insights:
         )
 
     def _insight_wrapper(
-        self, metadata: Metadata, filter_function: Callable, insight_description: str
+        self,
+        metadata: Metadata,
+        filter_function: Callable[[pd.DataFrame], pd.Series],
+        insight_description: str,
     ):
         data = metadata.dataframe.copy()
         data = self._filter_for_year(
