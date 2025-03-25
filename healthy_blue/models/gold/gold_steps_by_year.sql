@@ -6,7 +6,7 @@ SELECT
     AVG(speed) AS average_speed,
     MAX(speed) AS maximum_speed,
     SUM(distance) AS total_distance,
-    AVG(distance) AS total_distance,
+    AVG(distance) AS average_distance,
     MAX(distance) AS maximum_distance,
     SUM(calorie) AS total_calories_burned,
     AVG(calorie) AS average_calories_burned,

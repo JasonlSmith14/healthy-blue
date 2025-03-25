@@ -30,6 +30,7 @@ class Model:
         chain = chat_prompt_template | model
 
         # With 4o-mini, this is so quick that streaming is pointless. But 4o-mini is expensive, might be ideal to switch to slower model where streaming will be needed
+        # Add extra layer where I get results then format
         for chunk in chain.stream({}):
             time.sleep(0.1)
             yield chunk

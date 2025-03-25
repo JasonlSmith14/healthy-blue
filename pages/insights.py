@@ -110,3 +110,6 @@ def display_insight():
 
 
 display_insight()
+
+# Look more at data behind your insights - expander with more raw data
+# Classify chain as good/bad - question why it was bad: Becomes interactive; provide suggestion on how to improve
