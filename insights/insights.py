@@ -1,15 +1,17 @@
+from typing import Callable
 import pandas as pd
 import streamlit as st
 
 from insights.model import Model
+from models.metadata import Metadata
 
 
 class Insights:
     def __init__(
         self,
-        steps_by_day: pd.DataFrame,
-        steps_by_month: pd.DataFrame,
-        steps_by_year: pd.DataFrame,
+        steps_by_day: Metadata,
+        steps_by_month: Metadata,
+        steps_by_year: Metadata,
     ):
         self.steps_by_day = steps_by_day
         self.steps_by_month = steps_by_month
@@ -65,8 +67,19 @@ class Insights:
                 """
         )
 
+    def _insight_wrapper(
+        self, metadata: Metadata, filter_function: Callable, insight_description: str
+    ):
+        data = metadata.dataframe.copy()
+        data = self._filter_for_year(
+            data=data, date_column=metadata.date_column, format=metadata.date_format
+        )
+        row = filter_function(data)
+
+        return self._create_insight(f"{insight_description}: {row}")
+
     def _create_insight(self, input: str):
-        return self.model.generate_output(user_prompt=input)
+        return self.model.generate_insight(user_data=input)
 
     def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
         data[date_column] = pd.to_datetime(data[date_column], format=format)
@@ -83,89 +96,61 @@ class Insights:
         st.session_state[self.year_option] = []
 
     def day_with_most_steps(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.total_steps].idxmax()]
-
-        return self._create_insight(
-            f"This is the day the user took the most steps: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[data[self.total_steps].idxmax()],
+            insight_description="This is the day the user took the most steps",
         )
 
     def day_with_greatest_distance(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.total_distance].idxmax()]
-
-        return self._create_insight(
-            f"This is the day the user travelled the furthest distance: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[data[self.total_distance].idxmax()],
+            insight_description="This is the day the user travelled the furthest distance",
         )
 
     def day_with_least_steps(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.total_steps].idxmin()]
-
-        return self._create_insight(
-            f"This is the day the user took the least steps: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[data[self.total_steps].idxmin()],
+            insight_description="This is the day the user took the least steps",
         )
 
     def day_with_smallest_distance(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.total_distance].idxmin()]
-
-        return self._create_insight(
-            f"This is the day the user travelled the smallest distance: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[data[self.total_distance].idxmin()],
+            insight_description="This is the day the user travelled the smallest distance",
         )
 
     def month_with_most_steps(self):
-        data = self.steps_by_month.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_month_date_column, format="%Y-%m"
-        )
-        row = data.loc[data[self.total_steps].idxmax()]
-
-        return self._create_insight(
-            f"This is the month the user took the most steps: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_month,
+            filter_function=lambda data: data.loc[data[self.total_steps].idxmax()],
+            insight_description="This is the month the user took the most steps",
         )
 
     def month_with_least_steps(self):
-        data = self.steps_by_month.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_month_date_column, format="%Y-%m"
-        )
-        row = data.loc[data[self.total_steps].idxmin()]
-
-        return self._create_insight(
-            f"This is the month the user took the least steps: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_month,
+            filter_function=lambda data: data.loc[data[self.total_steps].idxmin()],
+            insight_description="This is the month the user took the least steps",
         )
 
     def coldest_day(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.maximum_temperature].idxmin()]
-
-        return self._create_insight(
-            f"This is the coldest day of the year for the user: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[
+                data[self.maximum_temperature].idxmin()
+            ],
+            insight_description="This is the coldest day of the year for the user",
         )
 
     def hottest_day(self):
-        data = self.steps_by_day.copy()
-        data = self._filter_for_year(
-            data=data, date_column=self.steps_by_day_date_column, format="%Y-%m-%d"
-        )
-        row = data.loc[data[self.maximum_temperature].idxmax()]
-
-        return self._create_insight(
-            f"This is the hottest day of the year for the user: {row}"
+        return self._insight_wrapper(
+            metadata=self.steps_by_day,
+            filter_function=lambda data: data.loc[
+                data[self.maximum_temperature].idxmax()
+            ],
+            insight_description="This is the hottest day of the year for the user",
         )
