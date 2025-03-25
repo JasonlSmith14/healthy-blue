@@ -47,7 +47,12 @@ insights = Insights(
     steps_by_day=steps_by_day,
 )
 
-insights.years_available()
+year_option = st.selectbox(
+    "Which year are you interested in seeing?",
+    placeholder="Choose a year",
+    options=(year for year in insights.years_available()),
+)
+
 
 insight_names = [
     day_with_most_steps_tab,
