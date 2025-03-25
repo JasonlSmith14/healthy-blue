@@ -1,4 +1,3 @@
-import time
 import pandas as pd
 from config import database
 import streamlit as st
