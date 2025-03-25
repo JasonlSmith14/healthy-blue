@@ -4,6 +4,7 @@ from config import database
 import streamlit as st
 from insights.formatting import ResponseFormatter
 from insights.insights import Insights
+from models.insight_data import InsightData
 
 st.set_page_config(layout="wide")
 st.sidebar.page_link("main.py", label="Upload Your Data")
@@ -41,16 +42,27 @@ steps_by_year: pd.DataFrame = st.session_state[steps_by_year_tag]
 steps_by_month: pd.DataFrame = st.session_state[steps_by_month_tag]
 steps_by_day: pd.DataFrame = st.session_state[steps_by_day_tag]
 
-insights = Insights(
-    steps_by_year=steps_by_year,
-    steps_by_month=steps_by_month,
-    steps_by_day=steps_by_day,
+steps_by_year_insight_data = InsightData(
+    dataframe=steps_by_year, date_column="year", date_format="%Y"
+)
+steps_by_month_insight_data = InsightData(
+    dataframe=steps_by_month, date_column="month_of_the_year", date_format="%Y-%m"
+)
+steps_by_day_insight_data = InsightData(
+    dataframe=steps_by_day, date_column="recorded_date", date_format="%Y-%m-%d"
 )
 
-year_option = st.selectbox(
-    "Which year are you interested in seeing?",
+insights = Insights(
+    steps_by_year=steps_by_year_insight_data,
+    steps_by_month=steps_by_month_insight_data,
+    steps_by_day=steps_by_day_insight_data,
+)
+
+years = insights.years_available()
+year_option = st.sidebar.selectbox(
+    f"Are you interested in seeing a year other than {max(years)}?",
     placeholder="Choose a year",
-    options=(year for year in insights.years_available()),
+    options=(year for year in years[::-1]),
 )
 
 

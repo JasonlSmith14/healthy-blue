@@ -2,23 +2,19 @@ from typing import Callable
 import pandas as pd
 
 from insights.model import Model
-from models.metadata import Metadata
+from models.insight_data import InsightData
 
 
 class Insights:
     def __init__(
         self,
-        steps_by_day: Metadata,
-        steps_by_month: Metadata,
-        steps_by_year: Metadata,
+        steps_by_day: InsightData,
+        steps_by_month: InsightData,
+        steps_by_year: InsightData,
     ):
         self.steps_by_day = steps_by_day
         self.steps_by_month = steps_by_month
         self.steps_by_year = steps_by_year
-
-        self.steps_by_day_date_column = "recorded_date"
-        self.steps_by_month_date_column = "month_of_the_year"
-        self.steps_by_year_date_column = "year"
 
         self.total_distance = "total_distance"
         self.total_steps = "total_steps"
@@ -68,7 +64,7 @@ class Insights:
 
     def _insight_wrapper(
         self,
-        metadata: Metadata,
+        metadata: InsightData,
         filter_function: Callable[[pd.DataFrame], pd.Series],
         insight_description: str,
     ):
@@ -85,13 +81,12 @@ class Insights:
 
     def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
         data[date_column] = pd.to_datetime(data[date_column], format=format)
-        data = data[data[date_column].dt.year == int(self.year_option)]
+        data = data[data[date_column].dt.year == int(max(self.years_available()))]
         return data
 
     def years_available(self):
-        years = self.steps_by_year[self.steps_by_year_date_column]
+        years = self.steps_by_year.dataframe[self.steps_by_year.date_column]
         return years
-        
 
     def day_with_most_steps(self):
         return self._insight_wrapper(
