@@ -6,3 +6,4 @@ streamlit
 openai
 langchain 
 langchain-openai
+streamlit-pills

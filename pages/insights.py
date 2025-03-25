@@ -1,13 +1,13 @@
+import random
 import pandas as pd
 from config import database
 import streamlit as st
+from streamlit_pills import pills
 from insights.formatting import ResponseFormatter
 from insights.insights import Insights
 from models.insight_data import InsightData
 
 st.set_page_config(layout="wide")
-st.sidebar.page_link("main.py", label="Upload Your Data")
-st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
 day_with_most_steps_tab = "Your most active day 🏆"
 day_with_greatest_distance_tab = "The longest distance you traveled in a day 🚶‍♂️🌍"
@@ -57,36 +57,37 @@ insights = Insights(
     steps_by_day=steps_by_day_insight_data,
 )
 
-years = insights.years_available()
-year_option = st.sidebar.selectbox(
-    f"Are you interested in seeing a year other than {max(years)}?",
-    placeholder="Choose a year",
-    options=(year for year in years[::-1]),
-)
 
-
-insights_list = [
-    (day_with_most_steps_tab, insights.day_with_most_steps),
-    (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
-    (month_with_most_steps_tab, insights.month_with_most_steps),
-    (day_with_least_steps_tab, insights.day_with_least_steps),
-    (day_with_smallest_distance_tab, insights.day_with_smallest_distance),
-    (month_with_least_steps_tab, insights.month_with_least_steps),
-    (hottest_day_tab, insights.hottest_day),
-    (coldest_day_tab, insights.coldest_day),
-]
+if "shuffled_list" not in st.session_state:
+    insights_list = [
+        (day_with_most_steps_tab, insights.day_with_most_steps),
+        (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
+        (month_with_most_steps_tab, insights.month_with_most_steps),
+        (day_with_least_steps_tab, insights.day_with_least_steps),
+        (day_with_smallest_distance_tab, insights.day_with_smallest_distance),
+        (month_with_least_steps_tab, insights.month_with_least_steps),
+        (hottest_day_tab, insights.hottest_day),
+        (coldest_day_tab, insights.coldest_day),
+    ]
+    random.shuffle(insights_list)
+    st.session_state["shuffled_list"] = insights_list
+else:
+    insights_list = st.session_state["shuffled_list"]
 
 insight_names = [tab for tab, _ in insights_list]
 insights_map = {tab: fn for tab, fn in insights_list}
 
-if "insight_number" not in st.session_state:
-    st.session_state["insight_number"] = 0
+with st.sidebar:
+    selected_insight = pills("Available Insights: ", insight_names)
+
+    years = insights.years_available()
+    year_option = pills(
+        f"Are you interested in seeing a year other than {max(years)}?",
+        options=[year for year in years[::-1]],
+    )
 
 
-@st.fragment
-def display_insight():
-    rerun = False
-
+def display_insight(selected_insight: str):
     insight_pkaceholder = st.empty()
     previous_placeholder = st.empty()
     title_placeholder = st.empty()
@@ -94,46 +95,24 @@ def display_insight():
     fun_placeholder = st.empty()
     challenge_placeholder = st.empty()
 
-    insight_name = insight_names[st.session_state["insight_number"]]
-    insight_function = insights_map[insight_name]
+    insight_function = insights_map[selected_insight]
 
-    insight_pkaceholder.markdown(f"# {insight_name}")
+    insight_pkaceholder.markdown(f"# {selected_insight}")
     with st.spinner("Generating insight...", show_time=True):
-        if insight_name in st.session_state:
-            insight: ResponseFormatter = st.session_state[insight_name]
+        if selected_insight in st.session_state:
+            insight: ResponseFormatter = st.session_state[selected_insight]
             previous_placeholder.info("This insight was previously determined")
         else:
             insight = insight_function()
-            st.session_state[insight_name] = insight
+            st.session_state[selected_insight] = insight
 
     title_placeholder.header(insight.title)
     highlight_placeholder.subheader(insight.highlight)
     fun_placeholder.write(insight.fun_to_know)
     challenge_placeholder.write(insight.challenge)
 
-    col1, col2 = st.columns(2, gap="small")
-    if st.session_state["insight_number"] != 0:
-        with col1:
-            if st.button(
-                "⬅️ Previous", key=f"previous_{st.session_state["insight_number"]}"
-            ):
-                st.session_state["insight_number"] = (
-                    st.session_state["insight_number"] - 1
-                )
-                rerun = True
 
-    if st.session_state["insight_number"] != len(insight_names):
-        with col2:
-            if st.button("Next ➡️", key=f"next_{st.session_state["insight_number"]}"):
-                st.session_state["insight_number"] = (
-                    st.session_state["insight_number"] + 1
-                )
-                rerun = True
-    if rerun:
-        st.rerun(scope="fragment")
-
-
-display_insight()
+display_insight(selected_insight=selected_insight)
 
 # Look more at data behind your insights - expander with more raw data
 # Classify chain as good/bad - question why it was bad: Becomes interactive; provide suggestion on how to improve
