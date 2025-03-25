@@ -20,8 +20,6 @@ month_with_least_steps_tab = "Your most relaxed month 📆💤"
 hottest_day_tab = "The hottest day you powered through 🔥🌞"
 coldest_day_tab = "The chilliest day you faced ❄️🧤"
 
-year_overview_tab = "Your year in motion! 🎉🚀"
-
 steps_by_year_tag = "steps_by_year"
 steps_by_month_tag = "steps_by_month"
 steps_by_day_tag = "steps_by_day"
@@ -60,7 +58,6 @@ insight_names = [
     month_with_least_steps_tab,
     hottest_day_tab,
     coldest_day_tab,
-    year_overview_tab,
 ]
 
 insights_map = {
