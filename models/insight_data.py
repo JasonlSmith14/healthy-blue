@@ -3,7 +3,7 @@ import pandas as pd
 
 
 @dataclass
-class Metadata:
+class InsightData:
     dataframe: pd.DataFrame
     date_column: str
     date_format: str
