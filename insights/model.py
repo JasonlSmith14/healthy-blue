@@ -11,11 +11,7 @@ class Model:
         self.client = ChatOpenAI(model=model, streaming=True)
         self.system_prompt = system_prompt
 
-    def generate_output(self, user_prompt: str) -> Generator[
-        ResponseFormatter,
-        None,
-        None,
-    ]:
+    def generate_output(self, user_prompt: str) -> ResponseFormatter:
 
         chat_prompt_template = ChatPromptTemplate.from_messages(
             [
@@ -31,6 +27,8 @@ class Model:
 
         # With 4o-mini, this is so quick that streaming is pointless. But 4o-mini is expensive, might be ideal to switch to slower model where streaming will be needed
         # Add extra layer where I get results then format
-        for chunk in chain.stream({}):
-            time.sleep(0.1)
-            yield chunk
+        # for chunk in chain.stream({}):
+        #     time.sleep(0.1)
+        #     yield chunk
+
+        return chain.invoke({})

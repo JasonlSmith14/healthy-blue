@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 
 from insights.model import Model
-from insights.formatting import ResponseFormatter
 
 
 class Insights:
@@ -66,38 +65,8 @@ class Insights:
                 """
         )
 
-    def _human_readable(self, num: int, distance_flag: bool = False):
-        if distance_flag:
-            return f"{num/1_000:.1f} km"
-        else:
-            if num >= 1_000_000:
-                return f"{num/1_000_000:.1f}M"
-            elif num >= 1_000:
-                return f"{num/1_000:.1f}K"
-        return str(num)
-
-    def _write_output(self, input: str):
-        previous_placeholder = st.empty()
-        title_placeholder = st.empty()
-        highlight_placeholder = st.empty()
-        fun_placeholder = st.empty()
-        challenge_placeholder = st.empty()
-
-        if input in st.session_state:
-            output: ResponseFormatter = st.session_state[input]
-            previous_placeholder.info("This insight was previously determined")
-            title_placeholder.header(output.title)
-            highlight_placeholder.subheader(output.highlight)
-            fun_placeholder.write(output.fun_to_know)
-            challenge_placeholder.write(output.challenge)
-        else:
-            for output in self.model.generate_output(user_prompt=input):
-                title_placeholder.header(output.title)
-                highlight_placeholder.subheader(output.highlight)
-                fun_placeholder.write(output.fun_to_know)
-                challenge_placeholder.write(output.challenge)
-
-            st.session_state[input] = output
+    def _create_insight(self, input: str):
+        return self.model.generate_output(user_prompt=input)
 
     def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
         data[date_column] = pd.to_datetime(data[date_column], format=format)
@@ -120,7 +89,9 @@ class Insights:
         )
         row = data.loc[data[self.total_steps].idxmax()]
 
-        self._write_output(f"This is the day the user took the most steps: {row}")
+        return self._create_insight(
+            f"This is the day the user took the most steps: {row}"
+        )
 
     def day_with_greatest_distance(self):
         data = self.steps_by_day.copy()
@@ -129,7 +100,7 @@ class Insights:
         )
         row = data.loc[data[self.total_distance].idxmax()]
 
-        self._write_output(
+        return self._create_insight(
             f"This is the day the user travelled the furthest distance: {row}"
         )
 
@@ -140,7 +111,9 @@ class Insights:
         )
         row = data.loc[data[self.total_steps].idxmin()]
 
-        self._write_output(f"This is the day the user took the least steps: {row}")
+        return self._create_insight(
+            f"This is the day the user took the least steps: {row}"
+        )
 
     def day_with_smallest_distance(self):
         data = self.steps_by_day.copy()
@@ -149,7 +122,7 @@ class Insights:
         )
         row = data.loc[data[self.total_distance].idxmin()]
 
-        self._write_output(
+        return self._create_insight(
             f"This is the day the user travelled the smallest distance: {row}"
         )
 
@@ -160,7 +133,9 @@ class Insights:
         )
         row = data.loc[data[self.total_steps].idxmax()]
 
-        self._write_output(f"This is the month the user took the most steps: {row}")
+        return self._create_insight(
+            f"This is the month the user took the most steps: {row}"
+        )
 
     def month_with_least_steps(self):
         data = self.steps_by_month.copy()
@@ -169,7 +144,9 @@ class Insights:
         )
         row = data.loc[data[self.total_steps].idxmin()]
 
-        self._write_output(f"This is the month the user took the least steps: {row}")
+        return self._create_insight(
+            f"This is the month the user took the least steps: {row}"
+        )
 
     def coldest_day(self):
         data = self.steps_by_day.copy()
@@ -178,7 +155,9 @@ class Insights:
         )
         row = data.loc[data[self.maximum_temperature].idxmin()]
 
-        self._write_output(f"This is the coldest day of the year for the user: {row}")
+        return self._create_insight(
+            f"This is the coldest day of the year for the user: {row}"
+        )
 
     def hottest_day(self):
         data = self.steps_by_day.copy()
@@ -187,4 +166,6 @@ class Insights:
         )
         row = data.loc[data[self.maximum_temperature].idxmax()]
 
-        self._write_output(f"This is the hottest day of the year for the user: {row}")
+        return self._create_insight(
+            f"This is the hottest day of the year for the user: {row}"
+        )

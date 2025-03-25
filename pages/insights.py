@@ -2,6 +2,7 @@ import time
 import pandas as pd
 from config import database
 import streamlit as st
+from insights.formatting import ResponseFormatter
 from insights.insights import Insights
 
 st.set_page_config(layout="wide")
@@ -80,12 +81,30 @@ if "insight_number" not in st.session_state:
 @st.fragment
 def display_insight():
     rerun = False
+
+    insight_pkaceholder = st.empty()
+    previous_placeholder = st.empty()
+    title_placeholder = st.empty()
+    highlight_placeholder = st.empty()
+    fun_placeholder = st.empty()
+    challenge_placeholder = st.empty()
+
     insight_name = insight_names[st.session_state["insight_number"]]
     insight_function = insights_map[insight_name]
 
-    st.markdown(f"# {insight_name}")
+    insight_pkaceholder.markdown(f"# {insight_name}")
     with st.spinner("Generating insight...", show_time=True):
-        insight_function()
+        if insight_name in st.session_state:
+            insight: ResponseFormatter = st.session_state[insight_name]
+            previous_placeholder.info("This insight was previously determined")
+        else:
+            insight = insight_function()
+            st.session_state[insight_name] = insight
+
+    title_placeholder.header(insight.title)
+    highlight_placeholder.subheader(insight.highlight)
+    fun_placeholder.write(insight.fun_to_know)
+    challenge_placeholder.write(insight.challenge)
 
     col1, col2 = st.columns(2, gap="small")
     if st.session_state["insight_number"] != 0:
