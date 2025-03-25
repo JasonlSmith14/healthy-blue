@@ -1,6 +1,5 @@
 from typing import Callable
 import pandas as pd
-import streamlit as st
 
 from insights.model import Model
 from models.metadata import Metadata
@@ -91,12 +90,8 @@ class Insights:
 
     def years_available(self):
         years = self.steps_by_year[self.steps_by_year_date_column]
-        self.year_option = st.selectbox(
-            "Which year are you interested in seeing?",
-            placeholder="Choose a year",
-            options=(year for year in years),
-        )
-        st.session_state[self.year_option] = []
+        return years
+        
 
     def day_with_most_steps(self):
         return self._insight_wrapper(
