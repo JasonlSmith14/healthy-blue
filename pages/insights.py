@@ -66,27 +66,19 @@ year_option = st.sidebar.selectbox(
 )
 
 
-insight_names = [
-    day_with_most_steps_tab,
-    day_with_greatest_distance_tab,
-    month_with_most_steps_tab,
-    day_with_least_steps_tab,
-    day_with_smallest_distance_tab,
-    month_with_least_steps_tab,
-    hottest_day_tab,
-    coldest_day_tab,
+insights_list = [
+    (day_with_most_steps_tab, insights.day_with_most_steps),
+    (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
+    (month_with_most_steps_tab, insights.month_with_most_steps),
+    (day_with_least_steps_tab, insights.day_with_least_steps),
+    (day_with_smallest_distance_tab, insights.day_with_smallest_distance),
+    (month_with_least_steps_tab, insights.month_with_least_steps),
+    (hottest_day_tab, insights.hottest_day),
+    (coldest_day_tab, insights.coldest_day),
 ]
 
-insights_map = {
-    day_with_most_steps_tab: insights.day_with_most_steps,
-    day_with_greatest_distance_tab: insights.day_with_greatest_distance,
-    month_with_most_steps_tab: insights.month_with_most_steps,
-    hottest_day_tab: insights.hottest_day,
-    coldest_day_tab: insights.coldest_day,
-    day_with_least_steps_tab: insights.day_with_least_steps,
-    day_with_smallest_distance_tab: insights.day_with_smallest_distance,
-    month_with_least_steps_tab: insights.month_with_least_steps,
-}
+insight_names = [tab for tab, _ in insights_list]
+insights_map = {tab: fn for tab, fn in insights_list}
 
 if "insight_number" not in st.session_state:
     st.session_state["insight_number"] = 0
