@@ -9,9 +9,12 @@ section[data-testid="stAppViewContainer"] {
 }
 
 .stApp {
-    background-image: url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background.webp');
+    background-image: url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background.webp'),
+    url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background2.webp'),
+    url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background3.webp'),
+    url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background4.webp');
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: top left, top right, bottom left, bottom right;
     background-size: auto;
-    /* height: 100vh; */
+    height: 100vh;
 }

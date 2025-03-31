@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-from PIL import Image
 
 from ingest.ingest import Ingest
 from models.city import City
