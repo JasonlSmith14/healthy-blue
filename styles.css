@@ -10,8 +10,8 @@ section[data-testid="stAppViewContainer"] {
 
 .stApp {
     background-image: url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background.PNG'); /* Correct raw path */
-    background-size: contain;
+    /* background-size: contain;
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; */
     height: 100vh;
 }
