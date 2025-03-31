@@ -8,9 +8,7 @@ from util import run_dbt
 from config import database, data_directory
 
 
-im = Image.open("static/background.PNG")
-
-st.set_page_config(layout="wide", page_title="Healthy Blue", page_icon=im)
+st.set_page_config(layout="wide", page_title="Healthy Blue")
 
 
 def load_css(file_name):

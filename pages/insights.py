@@ -10,9 +10,8 @@ from insights.insights import Insights
 from models.insight_data import InsightData
 
 
-im = Image.open("static/background.PNG")
+st.set_page_config(layout="wide", page_title="Your Insights")
 
-st.set_page_config(layout="wide", page_title="Your Insights", page_icon=im)
 
 def load_css(file_name):
     with open(file_name) as f:
@@ -122,6 +121,7 @@ def display_insight(selected_insight: str):
     highlight_placeholder.subheader(insight.highlight)
     fun_placeholder.write(insight.fun_to_know)
     challenge_placeholder.write(insight.challenge)
+
 
 if selected_insight:
     display_insight(selected_insight=selected_insight)
