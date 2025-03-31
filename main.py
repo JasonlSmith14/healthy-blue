@@ -1,12 +1,24 @@
 import os
 import streamlit as st
+from PIL import Image
 
 from ingest.ingest import Ingest
 from models.city import City
 from util import run_dbt
 from config import database, data_directory
 
-st.set_page_config(layout="wide")
+
+im = Image.open("static/background.PNG")
+
+st.set_page_config(layout="wide", page_title="Healthy Blue", page_icon=im)
+
+
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css("styles.css")
+
 
 st.sidebar.page_link("main.py", label="Upload Your Data")
 st.sidebar.page_link("pages/insights.py", label="Your Insights")

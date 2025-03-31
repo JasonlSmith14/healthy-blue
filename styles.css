@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+/* Apply font only to your main content */
+section[data-testid="stAppViewContainer"] {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #F2F2F2;
+    color: #163C40;
+    padding: 20px;
+}
+
+.stApp {
+    background-image: url('static/background.PNG'); /* Corrected path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+}

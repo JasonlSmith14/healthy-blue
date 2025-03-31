@@ -1,13 +1,25 @@
 import random
 import pandas as pd
-from config import database
 import streamlit as st
 from streamlit_pills import pills
+from PIL import Image
+
+from config import database
 from insights.formatting import ResponseFormatter
 from insights.insights import Insights
 from models.insight_data import InsightData
 
-st.set_page_config(layout="wide")
+
+im = Image.open("static/background.PNG")
+
+st.set_page_config(layout="wide", page_title="Your Insights", page_icon=im)
+
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+load_css("styles.css")
 
 day_with_most_steps_tab = "Your most active day 🏆"
 day_with_greatest_distance_tab = "The longest distance you traveled in a day 🚶‍♂️🌍"
@@ -78,7 +90,7 @@ insight_names = [tab for tab, _ in insights_list]
 insights_map = {tab: fn for tab, fn in insights_list}
 
 with st.sidebar:
-    selected_insight = pills("Available Insights: ", insight_names)
+    selected_insight = pills("Available Insights: ", insight_names, index=None)
 
     years = insights.years_available()
     year_option = pills(
@@ -111,8 +123,12 @@ def display_insight(selected_insight: str):
     fun_placeholder.write(insight.fun_to_know)
     challenge_placeholder.write(insight.challenge)
 
-
-display_insight(selected_insight=selected_insight)
+if selected_insight:
+    display_insight(selected_insight=selected_insight)
 
 # Look more at data behind your insights - expander with more raw data
 # Classify chain as good/bad - question why it was bad: Becomes interactive; provide suggestion on how to improve
+# Styling
+# Authentication since it is health data
+# Done is better than perfect
+# Dribble: Triad mix of colours
