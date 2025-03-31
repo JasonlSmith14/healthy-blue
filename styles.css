@@ -8,3 +8,8 @@ section[data-testid="stAppViewContainer"] {
     padding: 20px;
 }
 
+.stApp {
+    background-image: url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background.webp');
+    background-repeat: no-repeat;
+    height: 100vh;
+}
