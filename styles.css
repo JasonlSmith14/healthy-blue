@@ -11,5 +11,7 @@ section[data-testid="stAppViewContainer"] {
 .stApp {
     background-image: url('https://raw.githubusercontent.com/JasonlSmith14/healthy-blue/main/static/background.webp');
     background-repeat: no-repeat;
-    height: 100vh;
+    background-position: center;
+    background-size: auto;
+    /* height: 100vh; */
 }
