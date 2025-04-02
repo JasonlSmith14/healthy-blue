@@ -18,7 +18,7 @@ def load_css(file_name):
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-load_css("styles.css")
+load_css("styles/insights.css")
 
 day_with_most_steps_tab = "Your most active day 🏆"
 day_with_greatest_distance_tab = "The longest distance you traveled in a day 🚶‍♂️🌍"
@@ -62,14 +62,45 @@ steps_by_day_insight_data = InsightData(
     dataframe=steps_by_day, date_column="recorded_date", date_format="%Y-%m-%d"
 )
 
-insights = Insights(
-    steps_by_year=steps_by_year_insight_data,
-    steps_by_month=steps_by_month_insight_data,
-    steps_by_day=steps_by_day_insight_data,
-)
+years = steps_by_year_insight_data.years_available()
+
+insight_names = [
+    day_with_most_steps_tab,
+    day_with_greatest_distance_tab,
+    month_with_most_steps_tab,
+    day_with_least_steps_tab,
+    day_with_smallest_distance_tab,
+    month_with_least_steps_tab,
+    hottest_day_tab,
+    coldest_day_tab,
+]
+
+with st.sidebar:
+    st.markdown("# Select the insight you are interested in seeing: ")
+    selected_insight = pills(
+        label="Available Insights: ",
+        label_visibility="collapsed",
+        options=insight_names,
+        index=None,
+    )
+
+    st.markdown(f"# Are you interested in seeing a year other than {max(years)}?")
+    year_option = pills(
+        f"Are you interested in seeing a year other than {max(years)}?",
+        options=[year for year in years[::-1]],
+        label_visibility="collapsed",
+    )
 
 
-if "shuffled_list" not in st.session_state:
+def display_insight(selected_insight: str):
+
+    insights = Insights(
+        steps_by_year=steps_by_year_insight_data,
+        steps_by_month=steps_by_month_insight_data,
+        steps_by_day=steps_by_day_insight_data,
+        year=year_option,
+    )
+
     insights_list = [
         (day_with_most_steps_tab, insights.day_with_most_steps),
         (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
@@ -80,25 +111,8 @@ if "shuffled_list" not in st.session_state:
         (hottest_day_tab, insights.hottest_day),
         (coldest_day_tab, insights.coldest_day),
     ]
-    random.shuffle(insights_list)
-    st.session_state["shuffled_list"] = insights_list
-else:
-    insights_list = st.session_state["shuffled_list"]
 
-insight_names = [tab for tab, _ in insights_list]
-insights_map = {tab: fn for tab, fn in insights_list}
-
-with st.sidebar:
-    selected_insight = pills("Available Insights: ", insight_names, index=None)
-
-    years = insights.years_available()
-    year_option = pills(
-        f"Are you interested in seeing a year other than {max(years)}?",
-        options=[year for year in years[::-1]],
-    )
-
-
-def display_insight(selected_insight: str):
+    insights_map = {tab: fn for tab, fn in insights_list}
     insight_pkaceholder = st.empty()
     previous_placeholder = st.empty()
     title_placeholder = st.empty()
@@ -110,12 +124,12 @@ def display_insight(selected_insight: str):
 
     insight_pkaceholder.markdown(f"# {selected_insight}")
     with st.spinner("Generating insight...", show_time=True):
-        if selected_insight in st.session_state:
-            insight: ResponseFormatter = st.session_state[selected_insight]
+        if f"{selected_insight}_{year_option}" in st.session_state:
+            insight: ResponseFormatter = st.session_state[f"{selected_insight}_{year_option}"]
             previous_placeholder.info("This insight was previously determined")
         else:
             insight = insight_function()
-            st.session_state[selected_insight] = insight
+            st.session_state[f"{selected_insight}_{year_option}"] = insight
 
     title_placeholder.header(insight.title)
     highlight_placeholder.subheader(insight.highlight)

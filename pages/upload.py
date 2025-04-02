@@ -7,17 +7,15 @@ from util import run_dbt
 from config import database, data_directory
 
 
-st.set_page_config(layout="wide", page_title="Healthy Blue")
+st.set_page_config(layout="wide", page_title="Upload Your Data")
 
 
 def load_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-load_css("styles.css")
+load_css("styles/upload.css")
 
-
-st.sidebar.page_link("main.py", label="Upload Your Data")
 st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
 raw_data_directory = f"{data_directory}/raw"
@@ -33,11 +31,13 @@ try:
 except FileExistsError:
     print(f"Folder: {clean_data_directory} already exists")
 
+st.markdown("# Upload your health data")
 st.info(
     "Please note that the file needed is called: com.samsung.shealth.step_daily_trend.csv"
 )
 file = st.file_uploader(
     label="Upload Your Health Data",
+    label_visibility="collapsed"
 )
 
 cities = [
@@ -45,13 +45,15 @@ cities = [
     City(-29.8587, 31.0218, 8, "Durban"),
     City(-33.9249, 18.4241, 42, "Cape Town"),
 ]
+st.markdown("# What was your primary location?")
 option = st.selectbox(
     "What was your primary location?",
     (city.location_name for city in cities),
+    label_visibility="collapsed"
 )
 
-
-if st.button(label="Upload File"):
+st.markdown("# Let's begin generating your insights")
+if st.button(label="Begin"):
     with st.status("Ingesting Health Data..."):
         if not file:
             raise ValueError("Files were not uploaded")

@@ -11,10 +11,12 @@ class Insights:
         steps_by_day: InsightData,
         steps_by_month: InsightData,
         steps_by_year: InsightData,
+        year: int,
     ):
         self.steps_by_day = steps_by_day
         self.steps_by_month = steps_by_month
         self.steps_by_year = steps_by_year
+        self.year = year
 
         self.total_distance = "total_distance"
         self.total_steps = "total_steps"
@@ -81,7 +83,7 @@ class Insights:
 
     def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
         data[date_column] = pd.to_datetime(data[date_column], format=format)
-        data = data[data[date_column].dt.year == int(max(self.years_available()))]
+        data = data[data[date_column].dt.year == self.year]
         return data
 
     def years_available(self):
@@ -89,6 +91,7 @@ class Insights:
         return years
 
     def day_with_most_steps(self):
+        print(self.year)
         return self._insight_wrapper(
             metadata=self.steps_by_day,
             filter_function=lambda data: data.loc[data[self.total_steps].idxmax()],
