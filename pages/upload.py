@@ -3,20 +3,13 @@ import streamlit as st
 
 from ingest.ingest import Ingest
 from models.city import City
-from util import run_dbt
+from util import load_css, run_dbt
 from config import database, data_directory
 
 
 st.set_page_config(layout="wide", page_title="Upload Your Data")
 
-
-def load_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
 load_css("styles/upload.css")
-
-st.sidebar.page_link("pages/insights.py", label="Your Insights")
 
 raw_data_directory = f"{data_directory}/raw"
 clean_data_directory = f"{data_directory}/clean"
@@ -31,9 +24,9 @@ try:
 except FileExistsError:
     print(f"Folder: {clean_data_directory} already exists")
 
-st.markdown("# Upload your health data")
+st.markdown("# Upload Your Health Data")
 st.info(
-    "Please note that the file needed is called: com.samsung.shealth.step_daily_trend.csv"
+    "To get started, please upload your health data file. The required file is named **com.samsung.shealth.step_daily_trend.csv**."
 )
 file = st.file_uploader(
     label="Upload Your Health Data",
@@ -45,16 +38,16 @@ cities = [
     City(-29.8587, 31.0218, 8, "Durban"),
     City(-33.9249, 18.4241, 42, "Cape Town"),
 ]
-st.markdown("# What was your primary location?")
+st.markdown("# Where did you spend most of your time?")
 option = st.selectbox(
     "What was your primary location?",
     (city.location_name for city in cities),
     label_visibility="collapsed"
 )
 
-st.markdown("# Let's begin generating your insights")
-if st.button(label="Begin"):
-    with st.status("Ingesting Health Data..."):
+st.markdown("# Ready to generate your insights?")  
+if st.button(label="Get Started"):  
+    with st.status("Processing your health data..."):  
         if not file:
             raise ValueError("Files were not uploaded")
 

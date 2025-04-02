@@ -8,15 +8,10 @@ from config import database
 from insights.formatting import ResponseFormatter
 from insights.insights import Insights
 from models.insight_data import InsightData
+from util import load_css
 
 
 st.set_page_config(layout="wide", page_title="Your Insights")
-
-
-def load_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
 
 load_css("styles/insights.css")
 
@@ -76,7 +71,7 @@ insight_names = [
 ]
 
 with st.sidebar:
-    st.markdown("# Select the insight you are interested in seeing: ")
+    st.markdown("# Choose an insight you'd like to explore:")
     selected_insight = pills(
         label="Available Insights: ",
         label_visibility="collapsed",
@@ -84,7 +79,7 @@ with st.sidebar:
         index=None,
     )
 
-    st.markdown(f"# Are you interested in seeing a year other than {max(years)}?")
+    st.markdown(f"# Would you like to view a year other than {max(years)}?")
     year_option = pills(
         f"Are you interested in seeing a year other than {max(years)}?",
         options=[year for year in years[::-1]],
@@ -125,7 +120,9 @@ def display_insight(selected_insight: str):
     insight_pkaceholder.markdown(f"# {selected_insight}")
     with st.spinner("Generating insight...", show_time=True):
         if f"{selected_insight}_{year_option}" in st.session_state:
-            insight: ResponseFormatter = st.session_state[f"{selected_insight}_{year_option}"]
+            insight: ResponseFormatter = st.session_state[
+                f"{selected_insight}_{year_option}"
+            ]
             previous_placeholder.info("This insight was previously determined")
         else:
             insight = insight_function()

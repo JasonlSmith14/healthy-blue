@@ -1,13 +1,8 @@
 import streamlit as st
 
-# Set page configuration
+from util import load_css
+
 st.set_page_config(page_title="Healthy Blue", layout="centered")
-
-
-def load_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
 
 load_css("styles/landing.css")
 
