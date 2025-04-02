@@ -7,7 +7,7 @@ st.set_page_config(page_title="Healthy Blue", layout="centered")
 load_css("styles/landing.css")
 
 
-st.title("🌿 Welcome to Healthy Blue")
+st.title("Welcome to Healthy Blue")
 
 st.markdown(
     """

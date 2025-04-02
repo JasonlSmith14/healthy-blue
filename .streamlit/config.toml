@@ -1,11 +1,15 @@
 [client]
 showSidebarNavigation = false
+toolbarMode = "minimal"
 
 [server]
 enableStaticServing = true
 
 [theme]
-primaryColor = "#457299"
-backgroundColor = "#3E4D59"
-secondaryBackgroundColor = "#3E4D59"
+primaryColor = "#DBC04D"
+backgroundColor = "#5C594E"
+secondaryBackgroundColor = "#282833"
 textColor = "#EBEBEB"
+
+[runner]
+fastReruns = true

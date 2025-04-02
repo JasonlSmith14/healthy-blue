@@ -1,8 +1,6 @@
-import random
 import pandas as pd
 import streamlit as st
 from streamlit_pills import pills
-from PIL import Image
 
 from config import database
 from insights.formatting import ResponseFormatter
