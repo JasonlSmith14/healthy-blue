@@ -137,7 +137,5 @@ if selected_insight:
 
 # Look more at data behind your insights - expander with more raw data
 # Classify chain as good/bad - question why it was bad: Becomes interactive; provide suggestion on how to improve
-# Styling
 # Authentication since it is health data
-# Done is better than perfect
-# Dribble: Triad mix of colours
+
