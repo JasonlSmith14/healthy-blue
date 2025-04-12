@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_pills import pills
 
 from config import database
-from insights.formatting import ResponseFormatter
+from insights.formatting import InsightsFormatter
 from insights.insights import Insights
 from models.insight_data import InsightData
 from util import load_css
@@ -84,28 +84,30 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-
-def display_insight(selected_insight: str):
-
-    insights = Insights(
+if "insights" not in st.session_state:
+    st.session_state["insights"] = Insights(
         steps_by_year=steps_by_year_insight_data,
         steps_by_month=steps_by_month_insight_data,
         steps_by_day=steps_by_day_insight_data,
         year=year_option,
     )
 
-    insights_list = [
-        (day_with_most_steps_tab, insights.day_with_most_steps),
-        (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
-        (month_with_most_steps_tab, insights.month_with_most_steps),
-        (day_with_least_steps_tab, insights.day_with_least_steps),
-        (day_with_smallest_distance_tab, insights.day_with_smallest_distance),
-        (month_with_least_steps_tab, insights.month_with_least_steps),
-        (hottest_day_tab, insights.hottest_day),
-        (coldest_day_tab, insights.coldest_day),
-    ]
+insights: Insights = st.session_state["insights"]
+insights_list = [
+    (day_with_most_steps_tab, insights.day_with_most_steps),
+    (day_with_greatest_distance_tab, insights.day_with_greatest_distance),
+    (month_with_most_steps_tab, insights.month_with_most_steps),
+    (day_with_least_steps_tab, insights.day_with_least_steps),
+    (day_with_smallest_distance_tab, insights.day_with_smallest_distance),
+    (month_with_least_steps_tab, insights.month_with_least_steps),
+    (hottest_day_tab, insights.hottest_day),
+    (coldest_day_tab, insights.coldest_day),
+]
+insights_map = {tab: fn for tab, fn in insights_list}
 
-    insights_map = {tab: fn for tab, fn in insights_list}
+
+def display_insight(selected_insight: str):
+
     insight_pkaceholder = st.empty()
     previous_placeholder = st.empty()
     title_placeholder = st.empty()
@@ -118,7 +120,7 @@ def display_insight(selected_insight: str):
     insight_pkaceholder.markdown(f"# {selected_insight}")
     with st.spinner("Generating insight...", show_time=True):
         if f"{selected_insight}_{year_option}" in st.session_state:
-            insight: ResponseFormatter = st.session_state[
+            insight: InsightsFormatter = st.session_state[
                 f"{selected_insight}_{year_option}"
             ]
             previous_placeholder.info("This insight was previously determined")
@@ -132,10 +134,32 @@ def display_insight(selected_insight: str):
     challenge_placeholder.write(insight.challenge)
 
 
+def follow_up(disabled: bool = False):
+    question_placeholder = st.empty()
+    chat_input_placeholder = st.empty()
+
+    question_placeholder.subheader("Have a Question About Your Insight?")
+
+    with st.chat_message("assistant"):
+        st.write("Is there anything you would like to know about your insight?")
+
+    chat_input = chat_input_placeholder.chat_input(max_chars=100, disabled=disabled)
+
+    if chat_input:
+        with st.chat_message("user"):
+            st.write(chat_input)
+
+        response = insights.follow_up(input=chat_input).response
+
+        with st.chat_message("assistant"):
+            st.write(response)
+
+    st.session_state["disabled"] = True
+
+
 if selected_insight:
+    if f"{selected_insight}_{year_option}" not in st.session_state:
+        st.session_state["disabled"] = False
+
     display_insight(selected_insight=selected_insight)
-
-# Look more at data behind your insights - expander with more raw data
-# Classify chain as good/bad - question why it was bad: Becomes interactive; provide suggestion on how to improve
-# Authentication since it is health data
-
+    follow_up(st.session_state.get("disabled", False))

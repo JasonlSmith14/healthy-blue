@@ -1,6 +1,7 @@
 from typing import Callable
 import pandas as pd
 
+from insights.formatting import FollowUpFormatter, InsightsFormatter
 from insights.model import Model
 from models.insight_data import InsightData
 
@@ -35,7 +36,7 @@ class Insights:
         )
 
         self.model = Model(
-            system_prompt=f"""
+            insights_system_prompt=f"""
                     🎉 **Let’s turn your health journey into a celebration!** 🎉
 
                     🎯 **Your Goal:**  
@@ -63,7 +64,10 @@ class Insights:
                     - **Emojis** are your friend! 🎉 Use them freely to keep things fun and shareable. 
 
                     Your insights should be **exciting, rewarding, and worth celebrating**! Keep it light, make it personal, and always highlight the user’s progress. 🌟
-                """
+                """,
+            follow_up_system_prompt="",
+            insights_formatter=InsightsFormatter,
+            follow_up_formatter=FollowUpFormatter,
         )
 
     def _insight_wrapper(
@@ -83,6 +87,9 @@ class Insights:
     def _create_insight(self, input: str):
         return self.model.generate_insight(user_data=input)
 
+    def follow_up(self, input: str):
+        return self.model.generate_insight(user_data=input, follow_up=True)
+
     def _filter_for_year(self, data: pd.DataFrame, date_column: str, format: str):
         data[date_column] = pd.to_datetime(data[date_column], format=format)
         data = data[data[date_column].dt.year == self.year]
@@ -93,7 +100,6 @@ class Insights:
         return years
 
     def day_with_most_steps(self):
-        print(self.year)
         return self._insight_wrapper(
             metadata=self.steps_by_day,
             filter_function=lambda data: data.loc[data[self.total_steps].idxmax()],
